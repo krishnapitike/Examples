@@ -14,17 +14,17 @@ export OMP_NUM_THREADS=1
 module load PE-intel/1.0
 module load QE/6.1
 
-cd $PBS_O_WORKDIR
+cd  $PBS_O_WORKDIR
 pwd
 
-restart=0
-system=NiCuO2
+max=
+system=
 mkdir input
 cp    *     input/
 
 for i in `seq 1 9` ; do if [ -a lattice.$i ] ; then m=`echo $((i+1))` ; fi ; done
 
-for n in `seq $m 4` ; do
+for n in `seq $m $max` ; do
 
   if [ $m -gt 1 ] ; then
     grep -A69 "CELL_PARAMETERS (angstrom)" ${system}.64atom.pseudocubic.bulk.pw.vc-relax.`echo $((n-1))`.out > temp.allcelldata
