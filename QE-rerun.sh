@@ -35,9 +35,9 @@ for n in `seq $m $max` ; do
 
   if [ $m -gt 1 ] ; then
     grep -A`echo $((natm+5))` "CELL_PARAMETERS (angstrom)" ${fname}.`echo $((n-1))`.out > temp.allcelldata
-    tail -`echo $((natm+6))`  temp.allcelldata                                                                                  > temp.celldata
-    head -4                   temp.celldata                                                                                                     > lattice.${n}
-    tail -`echo $((natm+1))`  temp.celldata                                                                                     > coord.${n}
+    tail -`echo $((natm+6))`  temp.allcelldata                                          > temp.celldata
+    head -4                   temp.celldata                                             > lattice.${n}
+    tail -`echo $((natm+1))`  temp.celldata                                             > coord.${n}
     rm                        temp.*
   fi
 
