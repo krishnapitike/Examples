@@ -34,6 +34,9 @@ for n in `seq $m $max` ; do
     rm        temp.*
   fi
 
+  if [ `wc -l lattice.$n` -eq 0 ] ; then cp lattice.`echo $((n-1))` lattice.${n} ; fi
+  if [ `wc -l coord.$n` -eq 0 ]   ; then cp coord.`echo $((n-1))`   coord.${n}   ; fi
+  
   cat       incar potcar lattice.${n} kpoints coord.${n}                                        > ${system}.64atom.pseudocubic.bulk.pw.vc-relax.${n}.inp
   mpirun -n 72 pw.x -nk 2 -nb 6 -input ${system}.64atom.pseudocubic.bulk.pw.vc-relax.${n}.inp   > ${system}.64atom.pseudocubic.bulk.pw.vc-relax.${n}.out
 
