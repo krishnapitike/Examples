@@ -14,7 +14,7 @@ def recursiveStats(mu_old,sigma_old,xn,n):
 mu=0
 sigma=0
 for it,val in enumerate(E):
-    mu,sigma=recursiveStats(mu,sigma,val,it+1)
+    mu,sigma=recursiveStats(mu,sigma,val,it+1) #since "it" starts from zero
     if ((it+1)%10==1): print(mu,sigma)
     
 ## calculating mean and standard deviation
