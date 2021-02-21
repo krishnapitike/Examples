@@ -36,7 +36,6 @@ If you have included elements with POTCARs that specifically include f-orbitals,
 then there will also be another 7 columns that deal with each of these (14 for spin polarization).
 Again the order is similar to the PROCAR, except that now they are labeled with the lm number
 (-3, -2, ..., 3).
-
 Now, since each atom is listed separately, you may need to sum up atoms to see the full
 contribution from that species (for example to see the O 2p band in an oxide you would have to
 sum all three p orbitals for all O atoms). Or if you want to look at a layer in a material, you'll
@@ -78,7 +77,7 @@ if not os.path.exists(OUTDIR):
     os.mkdir(OUTDIR)
 pdosPlots='pdosPlots.pdf'                     #output file
 
-normTotal=10
+normTotal=10000
 #min=-113.879
 #Emax=12.031
 #DeltaE=0.01
@@ -161,25 +160,26 @@ DOSCARfile.close()
 ##creating pdf
 with PdfPages(pdosPlots) as pdf:
     for i in range(0,nAtm):                 ##i is atom index 1 to 6
+        print("plotting atom",i)
         DOSCARfile=open(DOSCARfileName,'r')
         it=0
         atm=i+1
-        dos=np.zeros((33,nBins))            ##33 columns by so many rows
+        dos=np.zeros((33,nBins-1))            ##33 columns by so many rows
         totaldos=np.zeros((5,nBins))
         for line in DOSCARfile :
-            if ( it>=6+(0+0)*(nBins+1)   and it<=4+(0+1)*(nBins+1) ):
-                j=it-6
+            if ( it>=7+(0+0)*(nBins+1)   and it<=4+(0+1)*(nBins+1) ):
+                j=it-7
                 line=line.split()
                 for k in range(0,5):
                     totaldos[k,j]=float(line[k])
-            if ( it>=6+(atm+0)*(nBins+1) and it<=4+(atm+1)*(nBins+1) ):
-                j=it-6-atm*(nBins+1)
+            if ( it>=7+(atm+0)*(nBins+1) and it<=4+(atm+1)*(nBins+1) ):
+                j=it-7-atm*(nBins+1)
                 line=line.split()
                 for k in range(0,19):
                     dos[k,j]=float(line[k])
             it=it+1
         DOSCARfile.close()
-        print(dos)
+        #print(dos)
         atomLegend=str(system.get_chemical_symbols()[atm-1])+str(atm)
         plt.rcParams['figure.figsize'] = [11, 8.5]
         lineSUp, =plt.plot(dos[0], dos[1] ,linestyle='-', color='b', linewidth=1.6)
@@ -191,10 +191,10 @@ with PdfPages(pdosPlots) as pdf:
         plt.legend([lineSUp,lineTUp],[atomLegend+'$-s$','$Total$/'+str(normTotal)])
         #plt.suptitle('atom number='+str(atm), fontsize=12)
 
-        matplotlib.pyplot.axvline(x=eFermi)
-        plt.ylabel('Total DOS (arb. units)')
+        matplotlib.pyplot.axvline(x=eFermi,linestyle=':',color='brown',linewidth=0.8)
+        plt.ylabel('LDOS [arb. units]')
         #plt.ylim((-6, 6))
-        plt.xlabel('Energy (eV)')
+        plt.xlabel('$E-E_f$ [eV]')
         #plt.xlim((-6, 6))
         pdf.savefig()
         #plt.show()
@@ -212,17 +212,17 @@ with PdfPages(pdosPlots) as pdf:
         linePTUp, =plt.plot(dos[0], dos[3]+dos[5]+dos[7], linestyle='-.', color='black', linewidth=1.6)
         linePTDn, =plt.plot(dos[0],-dos[4]-dos[6]-dos[8], linestyle='-.', color='black', linewidth=1.6)
 
-        lineTUp,  =plt.plot(totaldos[0], totaldos[1]/10 ,linestyle=':', color='black', linewidth=1.6)
-        lineTDn,  =plt.plot(totaldos[0],-totaldos[2]/10 ,linestyle=':', color='black', linewidth=1.6)
+        lineTUp,  =plt.plot(totaldos[0], totaldos[1]/normTotal ,linestyle=':', color='black', linewidth=1.6)
+        lineTDn,  =plt.plot(totaldos[0],-totaldos[2]/normTotal ,linestyle=':', color='black', linewidth=1.6)
 
         plt.legend([linePxUp,linePyUp,linePzUp,linePTUp,lineTUp],
                    [atomLegend+'$-p_x$',atomLegend+'$-p_y$',atomLegend+'$-p_z$',atomLegend+'$-p_{Total}$','$Total$/'+str(normTotal)])
         #plt.suptitle('atom number='+str(atm), fontsize=12)
 
-        matplotlib.pyplot.axvline(x=eFermi)
-        plt.ylabel('Total DOS (arb. units)')
+        matplotlib.pyplot.axvline(x=eFermi,linestyle=':',color='brown',linewidth=0.8)
+        plt.ylabel('LDOS [arb. units]')
         #plt.ylim((-6, 6))
-        plt.xlabel('Energy (eV)')
+        plt.xlabel('$E-E_f$ [eV]')
         #plt.xlim((-5, 6))
         pdf.savefig()
         #plt.show()
@@ -246,20 +246,62 @@ with PdfPages(pdosPlots) as pdf:
         lineDTUp,   =plt.plot(dos[0], dos[ 9]+dos[11]+dos[13]+dos[15]+dos[17],linestyle='-.', color='black', linewidth=1.6)
         lineDTDn,   =plt.plot(dos[0],-dos[10]-dos[12]-dos[14]-dos[16]-dos[18],linestyle='-.', color='black', linewidth=1.6)
 
-        lineTUp,    =plt.plot(totaldos[0], totaldos[1]/10 ,linestyle=':', color='black', linewidth=1.6)
-        lineTDn,    =plt.plot(totaldos[0],-totaldos[2]/10 ,linestyle=':', color='black', linewidth=1.6)
+        lineTUp,    =plt.plot(totaldos[0], totaldos[1]/normTotal ,linestyle=':', color='black', linewidth=1.6)
+        lineTDn,    =plt.plot(totaldos[0],-totaldos[2]/normTotal ,linestyle=':', color='black', linewidth=1.6)
 
         plt.legend([lineDxyUp,lineDyzUp,lineDzxUp,lineDx2y2Up,lineDz2Up,lineDTUp,lineTUp],
                    [atomLegend+'$-d_{xy}$',atomLegend+'$-d_{yz}$',atomLegend+'$-d_{zx}$',
                     atomLegend+'$-d_{x^2-y^2}$',atomLegend+'$-d_{z^2}$',atomLegend+'$-d_{Total}$','$Total$/'+str(normTotal)])
         #plt.suptitle('atom number='+str(atm), fontsize=12)
 
-        matplotlib.pyplot.axvline(x=eFermi)
-        plt.ylabel('Total DOS (arb. units)')
+        matplotlib.pyplot.axvline(x=eFermi,linestyle=':',color='brown',linewidth=0.8)
+        plt.ylabel('LDOS [arb. units]')
         #plt.ylim((-6, 6))
-        plt.xlabel('Energy (eV)')
+        plt.xlabel('$E-E_f$ [eV]')
         #plt.xlim((-5, 6))
-        plt.xlabel('Energy (eV)')
+        pdf.savefig()
+        #plt.show()
+        plt.close()
+
+
+        lineF_3Up,  =plt.plot(dos[0], dos[19] ,linestyle='-', color='y', linewidth=1.6)
+        lineF_3Dn,  =plt.plot(dos[0],-dos[20] ,linestyle='-', color='y', linewidth=1.6)
+
+        lineF_2Up,  =plt.plot(dos[0], dos[21] ,linestyle='-', color='k', linewidth=1.6)
+        lineF_2Dn,  =plt.plot(dos[0],-dos[22] ,linestyle='-', color='k', linewidth=1.6)
+
+        lineF_1Up,  =plt.plot(dos[0], dos[23] ,linestyle='-', color='c', linewidth=1.6)
+        lineF_1Dn,  =plt.plot(dos[0],-dos[24] ,linestyle='-', color='c', linewidth=1.6)
+
+        lineF0Up,  =plt.plot(dos[0], dos[25] ,linestyle='-', color='cadetblue', linewidth=1.6)
+        lineF0Dn,  =plt.plot(dos[0],-dos[26] ,linestyle='-', color='cadetblue', linewidth=1.6)
+
+        lineF1Up,  =plt.plot(dos[0], dos[27] ,linestyle='-', color='firebrick', linewidth=1.6)
+        lineF1Dn,  =plt.plot(dos[0],-dos[28] ,linestyle='-', color='firebrick', linewidth=1.6)
+
+        lineF2Up,  =plt.plot(dos[0], dos[29] ,linestyle='-', color='darkorange', linewidth=1.6)
+        lineF2Dn,  =plt.plot(dos[0],-dos[30] ,linestyle='-', color='darkorange', linewidth=1.6)
+
+        lineF3Up,  =plt.plot(dos[0], dos[31] ,linestyle='-', color='forestgreen', linewidth=1.6)
+        lineF3Dn,  =plt.plot(dos[0],-dos[32] ,linestyle='-', color='forestgreen', linewidth=1.6)
+
+        lineFTUp,   =plt.plot(dos[0], dos[19]+dos[21]+dos[23]+dos[25]+dos[27]+dos[29]+dos[31],linestyle='-.', color='black', linewidth=1.6)
+        lineFTDn,   =plt.plot(dos[0],-dos[20]-dos[22]-dos[24]-dos[26]-dos[28]-dos[30]-dos[32],linestyle='-.', color='black', linewidth=1.6)
+
+        lineTUp,    =plt.plot(totaldos[0], totaldos[1]/normTotal ,linestyle=':', color='black', linewidth=1.6)
+        lineTDn,    =plt.plot(totaldos[0],-totaldos[2]/normTotal ,linestyle=':', color='black', linewidth=1.6)
+
+        plt.legend([lineF_3Up,lineF_2Up,lineF_1Up,lineF0Up,lineF1Up,lineF2Up,lineF3Up,lineFTUp,lineTUp],
+                   [atomLegend+'$-f_{-3}$',atomLegend+'$-f_{-2}$',atomLegend+'$-f_{-1}$',
+                    atomLegend+'$-f_{0}$',atomLegend+'$-f_{1}$',atomLegend+'$-f_{2}$',atomLegend+'$-f_{3}$',
+                    atomLegend+'$-f_{Total}$','$Total$/'+str(normTotal)])
+        #plt.suptitle('atom number='+str(atm), fontsize=12)
+
+        matplotlib.pyplot.axvline(x=eFermi,linestyle=':',color='brown',linewidth=0.8)
+        plt.ylabel('LDOS [arb. units]')
+        #plt.ylim((-6, 6))
+        plt.xlabel('$E-E_f$ [eV]')
+        #plt.xlim((-5, 6))
         pdf.savefig()
         #plt.show()
         plt.close()
@@ -677,11 +719,12 @@ def writeDOS(fName,totaldos,nBins):
     fWrite.close()
 
 for i in range(nAtm):
+    print("writing data of atom",i)
     if (i==0) :
         fName=OUTDIR+"/"+"000.total"
-        writeTDOS(fName,totaldos,nBins)
+        writeTDOS(fName,totaldos,nBins-1)
     fName=OUTDIR+"/"+str('{0:03d}'.format(i+1))+str(system.get_chemical_symbols()[i])
-    writeDOS(fName,dos,nBins)
+    writeDOS(fName,dos,nBins-1)
 
 
 # In[6]:
