@@ -64,18 +64,18 @@ def gaussianSmoothing2D(x_vals,y_vals,sigma):
     return(y_smth)
 
 #some example data
-x= np.linspace(0, 1, 100)
-y = 3.0 * x 
+x= np.linspace(0, 2*np.pi, 500)
+y = np.sin(x) 
 #some random confidence interval
-ci = 2*np.random.rand(len(x))
+ci = 0.3*np.random.rand(len(x))
 #smooothed random confidence interval
-cis=gaussianSmoothing2D(x,ci,0.02)
+cis=gaussianSmoothing2D(x,ci,0.05)
 
 #plot
 fig, ax = plt.subplots()
 ax.plot(x,y, color='r',label='y')
-ax.fill_between(x, (y-ci), (y+ci), color='b', alpha=.3,label='confidence interval')
-ax.fill_between(x, (y-cis), (y+cis), color='g', alpha=.3,label='smoothed')
+ax.fill_between(x, (y-ci), (y+ci), color='b', alpha=.2,label='confidence interval')
+ax.fill_between(x, (y-cis), (y+cis), color='g', alpha=.4,label='smoothed')
 plt.xlabel('x')
 plt.ylabel('y')
 ax.xaxis.set_minor_locator(AutoMinorLocator(5))
