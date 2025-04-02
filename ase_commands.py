@@ -26,6 +26,9 @@ from ase import Atoms
 import numpy as np
 import random
 
+# Desired element order
+desired_order = ['Fe', 'Ni', 'Cr', 'Al']
+
 # Load POSCAR
 atoms = read('POSCAR')
 
