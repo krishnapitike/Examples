@@ -15,8 +15,10 @@ super_cell=make_supercell(unit_cell, transformation)
 # writing lammps data
 write_lammps_data('supercell.data',super_cell,atom_style='atomic')
 
+
+
 #################################################################
-# sorting in ase based on elements
+# randomly chnaging fraction of specific element into other element
 #################################################################
 
 from ase.io import read, write
@@ -24,13 +26,10 @@ from ase import Atoms
 import numpy as np
 import random
 
-# Desired element order
-desired_order = ['Fe', 'Ni', 'Cr', 'Al']
-
 # Load POSCAR
 atoms = read('POSCAR')
 
-# Find indices of Fe atoms
+# Find indices of Fe atoms to replace
 fe_indices = [i for i, atom in enumerate(atoms) if atom.symbol == 'Fe']
 
 # Set the number of substitutions (e.g., 10% of Fe atoms)
@@ -49,3 +48,27 @@ atoms_sorted = Atoms([atom for symbol in desired_order for atom in atoms if atom
 
 # Write the modified structure to a new POSCAR
 write('POSCAR_modified', atoms_sorted, format='vasp')
+
+
+
+#################################################################
+# sorting in ase based on elements
+#################################################################
+
+from ase.io import read, write
+from ase import Atoms
+import numpy as np
+import random
+
+# Desired element order
+desired_order = ['Fe', 'Ni', 'Cr', 'Al']
+
+# Load POSCAR
+atoms = read('POSCAR')
+
+# Sort atoms by the desired element order
+atoms_sorted = Atoms([atom for symbol in desired_order for atom in atoms if atom.symbol == symbol],
+                     cell=atoms.cell, pbc=atoms.pbc)
+
+# Write the modified structure to a new POSCAR
+write('POSCAR_sorted', atoms_sorted, format='vasp')
