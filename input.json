@@ -1,0 +1,12 @@
+{
+    "input_format": "lammps_data",
+    "output_format": "lammps_data",
+    "input_file": "init.data",
+    "void_file": "init_void.data",
+    "bubble_file": "init_HeBubble.data",
+    "center": [23.7375, 24.6179, 53.3945], 
+    "radius": 10.0, 
+    "hemisphere": "bottom",
+    "order": ["W", "Ni", "Fe", "He"],
+    "he_vacancy_ratio": 1.5
+  }
